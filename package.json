@@ -1,0 +1,25 @@
+{
+  "name": "flowzone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist",
+    "start:dev": "ts-node-dev src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Joseph Harrison-Lim",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "socket.io": "^4.2.0",
+    "socket.io-client": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.4.4"
+  }
+}
