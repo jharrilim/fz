@@ -171,6 +171,6 @@ export class Application {
 if (require.main?.filename === __filename) {
   Application
     .create()
-    .start()
+    .start(+(process.env.PORT || 8080))
     .then(addr => console.log(`App started on http://${addr.address}:${addr.port}`));
 }
