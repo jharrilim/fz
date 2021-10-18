@@ -19,6 +19,11 @@ const randomCode = () => {
   return Array(10).fill(0).map(_ => chars[Math.floor(Math.random() * chars.length)]).join('');
 };
 
+const serializeWords = (words: Room['words']) =>
+  Object.entries(words)
+    .map(([k, v]) => [k, { ...v, upvotes: Array.from(v.upvotes) }])
+    .reduce((acc, n) => ({ ...acc, [n[0] as string]: n[1] }), {});
+
 export class Application {
   private readonly _express: express.Express;
   private readonly _srv: http.Server;
@@ -27,14 +32,6 @@ export class Application {
   private _port = 8080;
 
   private readonly _rooms: { [roomCode: string]: Room } = {};
-
-  public get hostname() {
-    return this._hostname;
-  }
-
-  public get port() {
-    return this._port;
-  }
 
   constructor() {
     this._express = express();
@@ -68,7 +65,7 @@ export class Application {
       console.info('CONNECTED: ' + socket.id);
 
       socket.on('session:host', async () => {
-        
+
         const roomCode = app.resolveRoomName();
         await socket.join(roomCode);
 
@@ -81,9 +78,16 @@ export class Application {
       });
 
       socket.on('session:join', async (roomCode: string) => {
+        if (!app._rooms[roomCode])
+          return;
+
         await socket.join(roomCode);
         app._rooms[roomCode].guests.add(socket.id);
-        socket.emit('session:joined', roomCode);
+        socket.emit(
+          'session:joined',
+          roomCode,
+          serializeWords(app._rooms[roomCode].words)
+        );
       });
 
       socket.on('session:leave', async (roomCode: string) => {
@@ -125,13 +129,14 @@ export class Application {
         } else {
           room.words[word] = { upvotes: new Set([socket.id]) };
         }
-        console.log('room words:', room.words);
 
-        app._io.to(roomCode)
-          .emit('session:words:updated', Object.entries(room.words)
-            .map(([k, v]) => [k, { ...v, upvotes: Array.from(v.upvotes) }])
-            .reduce((acc, n) => ({ ...acc, [n[0] as string]: n[1] }), {})
-          );
+        const words = serializeWords(room.words);
+
+        console.log(words);
+        app._io.to(roomCode).emit(
+          'session:words:updated',
+          words
+        );
       });
 
       socket.on('session:word:remove', (roomCode: string, word: string) => {
@@ -144,7 +149,7 @@ export class Application {
 
         delete room.words[word];
 
-        socket.to(roomCode).emit('session:word:deleted', word);
+        app._io.to(roomCode).emit('session:words:removed', word);
       })
     });
     return app;

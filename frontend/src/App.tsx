@@ -6,12 +6,18 @@ import Guest from './Guest';
 
 export const SocketContext = createContext<{ socket: Socket | null, roomCode: string } | null>(null);
 
+export interface Words {
+  [word: string]: {
+    upvotes: Array<string>;
+  };
+}
+
 function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [roomCode, setRoomCode] = useState('');
   const [roomCodeInput, setRoomCodeInput] = useState('');
   const [persona, setPersona] = useState('');
-  const [words, setWords] = useState({});
+  const [words, setWords] = useState<Words>({});
 
   useEffect(() => {
     const socket = io('http://localhost:8080');
@@ -20,12 +26,21 @@ function App() {
       setRoomCode(roomCode);
       setPersona('host');
     });
-    socket.on('session:joined', (roomCode: string) => {
+    socket.on('session:joined', (roomCode: string, words: Words) => {
       setRoomCode(roomCode);
       setPersona('guest');
-    });
-    socket.on('session:words:updated', (words: any) => {
       setWords(words);
+    });
+    socket.on('session:words:updated', (words: Words) => {
+      console.log(words);
+      setWords(words);
+    });
+    socket.on('session:words:removed', (word: string) => {
+      setWords(words => {
+        const newWords = { ...words };
+        delete newWords[word];
+        return newWords;
+      });
     });
   }, []);
 
@@ -39,7 +54,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>ID: {socket?.id}</h1>
+      <h1>Flowzone</h1>
       <h2>{persona}</h2>
       {roomCode
         ? <code>code: {roomCode}</code>

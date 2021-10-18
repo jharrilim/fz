@@ -13,7 +13,7 @@ const Host: FC<HostProps> = ({
   words,
 }) => {
   return (
-    <WordList words={words} />
+    <WordList words={words} variant="host" />
   );
 }
 

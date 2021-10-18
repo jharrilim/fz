@@ -23,7 +23,7 @@ const Guest: FC<GuestProps> = ({ words }) => {
 
   return (
     <div>
-      <WordList words={words} />
+      <WordList words={words} variant="guest" />
 
       <p>Enter a word!</p>
       <input type="text" onChange={e => setWord(e.target.value)} value={word} />
