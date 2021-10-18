@@ -20,7 +20,11 @@ function App() {
   const [words, setWords] = useState<Words>({});
 
   useEffect(() => {
-    const socket = io('http://localhost:8080');
+    const socket = io(
+      process.env.NODE_ENV === 'production'
+        ? '/'
+        : 'http://localhost:8080'
+    );
     socket.on('connect', () => setSocket(socket));
     socket.on('session:roomcode', (roomCode: string) => {
       setRoomCode(roomCode);
