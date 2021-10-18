@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "build:frontend": "cd frontend && yarn build",
-    "build:production": "yarn build && yarn build:frontend && mv frontend/build dist/build",
-    "heroku-postbuild": "yarn build:production",
+    "build:production": "yarn build && yarn frontend:build && mv frontend/build dist/build",
+    "frontend:build": "cd frontend && yarn build",
+    "frontend:install": "cd frontend && yarn",
+    "heroku-postbuild": "yarn frontend:install && yarn build:production",
     "start": "node dist",
     "start:dev": "ts-node-dev src",
     "test": "echo \"Error: no test specified\" && exit 1"
