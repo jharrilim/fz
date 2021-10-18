@@ -37,9 +37,7 @@ export class Application {
   constructor() {
     this._express = express();
     this._express.use(cors());
-    const staticPath = process.env.NODE_ENV === 'production'
-      ? join(__dirname, 'dist', 'build')
-      : join(__dirname, 'build');
+    const staticPath = join(__dirname, 'build');
     console.log('static path: ', staticPath);
     this._express.use(express.static(staticPath));
     this._srv = http.createServer(this._express);
