@@ -32,7 +32,6 @@ function App() {
       setWords(words);
     });
     socket.on('session:words:updated', (words: Words) => {
-      console.log(words);
       setWords(words);
     });
     socket.on('session:words:removed', (word: string) => {

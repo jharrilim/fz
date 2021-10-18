@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "build:frontend": "cd frontend && yarn build",
+    "build:production": "yarn build && yarn build:frontend && mv frontend/build dist/build",
     "start": "node dist",
     "start:dev": "ts-node-dev src",
     "test": "echo \"Error: no test specified\" && exit 1"
