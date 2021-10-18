@@ -29,8 +29,6 @@ export class Application {
   private readonly _express: express.Express;
   private readonly _srv: http.Server;
   private readonly _io: Server;
-  private _hostname = '0.0.0.0';
-  private _port = 8080;
 
   private readonly _rooms: { [roomCode: string]: Room } = {};
 
@@ -48,12 +46,10 @@ export class Application {
     });
   }
 
-  start(port: number = 8080, hostname: string = 'localhost'): Promise<AddressInfo> {
-    this._port = port;
-    this._hostname = hostname;
+  start({ port = 8080, hostname = 'localhost' }): Promise<AddressInfo> {
     return new Promise((resolve, reject) => {
       try {
-        return this._srv.listen(this._port, this._hostname, () => {
+        return this._srv.listen(port, hostname, () => {
           this._io.listen(this._srv);
           resolve(this._srv.address() as AddressInfo);
         });
@@ -171,6 +167,9 @@ export class Application {
 if (require.main?.filename === __filename) {
   Application
     .create()
-    .start(+(process.env.PORT || 8080))
+    .start({
+      hostname: '0.0.0.0',
+      port: +(process.env.PORT || 8080),
+    })
     .then(addr => console.log(`App started on http://${addr.address}:${addr.port}`));
 }
