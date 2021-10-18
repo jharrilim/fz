@@ -29,7 +29,7 @@ export class Application {
   private readonly _express: express.Express;
   private readonly _srv: http.Server;
   private readonly _io: Server;
-  private _hostname = 'localhost';
+  private _hostname = '0.0.0.0';
   private _port = 8080;
 
   private readonly _rooms: { [roomCode: string]: Room } = {};
