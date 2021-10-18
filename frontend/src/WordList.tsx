@@ -30,7 +30,7 @@ const WordList: FC<WordListProps> = ({
     <ul className={styles.wordList}>
       {Object
         .entries(words)
-        .sort((a, b) => a[1].upvotes.length - b[1].upvotes.length)
+        .sort((a, b) => b[1].upvotes.length - a[1].upvotes.length)
         .map(([word, { upvotes }]) =>
           <li key={word}>
             <button onClick={wordClicked(word)}>
