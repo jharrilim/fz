@@ -14,11 +14,13 @@ interface Room {
     };
   };
 }
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 
-const randomCode = () => {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-  return Array(10).fill(0).map(_ => chars[Math.floor(Math.random() * chars.length)]).join('');
-};
+const randomCode = () => Array(10)
+  .fill(0)
+  .map(_ => 
+    chars[Math.floor(Math.random() * chars.length)]
+  ).join('');
 
 const serializeWords = (words: Room['words']) =>
   Object.entries(words)
@@ -36,7 +38,6 @@ export class Application {
     this._express = express();
     this._express.use(cors());
     const staticPath = join(__dirname, 'build');
-    console.log('static path: ', staticPath);
     this._express.use(express.static(staticPath));
     this._srv = http.createServer(this._express);
     this._io = new Server(this._srv, {
@@ -65,7 +66,6 @@ export class Application {
       console.info('CONNECTED: ' + socket.id);
 
       socket.on('session:host', async () => {
-
         const roomCode = app.resolveRoomName();
         await socket.join(roomCode);
 
@@ -107,7 +107,7 @@ export class Application {
       });
 
       socket.on('disconnect', reason => {
-        console.log(`${socket.id} disconnected: ${reason}`);
+        console.info(`${socket.id} disconnected: ${reason}`);
         Object.entries(app._rooms).forEach(([roomCode, room]) => {
           if (socket.id === room.host) {
             app._io.to(roomCode).disconnectSockets();
@@ -132,7 +132,7 @@ export class Application {
 
         const words = serializeWords(room.words);
 
-        console.log(words);
+        console.debug(words);
         app._io.to(roomCode).emit(
           'session:words:updated',
           words
@@ -171,5 +171,5 @@ if (require.main?.filename === __filename) {
       hostname: '0.0.0.0',
       port: +(process.env.PORT || 8080),
     })
-    .then(addr => console.log(`App started on http://${addr.address}:${addr.port}`));
+    .then(addr => console.info(`App started on http://${addr.address}:${addr.port}`));
 }

@@ -1,40 +1,93 @@
-.App {
+:root {
+  --saturation: 90%;
+  --lightness: 70%;
+
+  --primary: hsl(
+    calc(360 / 4 * 0.5),
+    var(--saturation),
+    var(--lightness)
+  );
+
+  --primary-light: hsl(
+    calc(360 / 4 * 0.5),
+    var(--saturation),
+    calc(var(--lightness) - 5%)
+  );
+
+  --secondary: hsl(
+    calc(360 / 4 * 3.5),
+    var(--saturation),
+    var(--lightness)
+  );
+
+  --secondary-light: hsl(
+    calc(360 / 4 * 3.5),
+    var(--saturation),
+    calc(var(--lightness) - 5%)
+  );
+
+  --background-primary: hsl(calc(360 / 4 * 3), 90%, 60%);
+}
+
+body {
+  background-color: var(--background-primary);
+}
+
+* {
+  box-sizing: border-box;
+  font-size: 1.25rem;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
   text-align: center;
   margin: auto;
   max-width: 600px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+button {
+  padding: 2rem;
+  border: none;
+  border-radius: 0.5rem;
+}
+
+.button--primary {
+  background-color: var(--primary);
+}
+
+.button--primary:hover {
+  background-color: var(--primary-light);
+}
+
+.button--secondary {
+  background-color: var(--secondary);
+}
+
+.button--secondary:hover {
+  background-color: var(--secondary-light);
+}
+
+.or-text {
+  z-index: 2;
+}
+
+.or-text span {
+  padding: 0.5rem;
+  background-color: white;
+  border-radius: 10rem;
+  border: 1px solid rgba(0,0,0, 0.3);
+}
+
+.room-code-input {
+  padding: 2rem;
+
+}
+
+.title {
+
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }

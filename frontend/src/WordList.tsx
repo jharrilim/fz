@@ -19,7 +19,6 @@ const WordList: FC<WordListProps> = ({
 
   const wordClicked = useCallback((word: string) => () => {
     if (variant === 'guest') {
-      console.log('clicky guesty', word);
       ctx?.socket?.emit('session:word:add', ctx.roomCode, word);
     } else {
       ctx?.socket?.emit('session:word:remove', ctx.roomCode, word);
@@ -34,7 +33,7 @@ const WordList: FC<WordListProps> = ({
         .map(([word, { upvotes }]) =>
           <li key={word}>
             <button onClick={wordClicked(word)}>
-              {word} - {upvotes.length} upvotes
+              {word} - {upvotes.length} upvote{upvotes.length !== 1 ? 's' : ''}
             </button>
           </li>
         )

@@ -1,10 +1,16 @@
-import React, { createContext, useCallback, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import './App.css';
 import io, { Socket } from 'socket.io-client';
+import {
+  Switch,
+  Route,
+  useHistory,
+} from 'react-router-dom';
 import Host from './Host';
 import Guest from './Guest';
-
-export const SocketContext = createContext<{ socket: Socket | null, roomCode: string } | null>(null);
+import Home from './pages/Home';
+import EnterRoomCode from './pages/EnterRoomCode';
+export const SocketContext = createContext<{ socket: ReturnType<typeof io> | null, roomCode: string } | null>(null);
 
 export interface Words {
   [word: string]: {
@@ -15,9 +21,9 @@ export interface Words {
 function App() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [roomCode, setRoomCode] = useState('');
-  const [roomCodeInput, setRoomCodeInput] = useState('');
   const [persona, setPersona] = useState('');
   const [words, setWords] = useState<Words>({});
+  const history = useHistory();
 
   useEffect(() => {
     const socket = io(
@@ -25,15 +31,18 @@ function App() {
         ? '/'
         : 'http://localhost:8080'
     );
+
     socket.on('connect', () => setSocket(socket));
     socket.on('session:roomcode', (roomCode: string) => {
       setRoomCode(roomCode);
       setPersona('host');
+      history.push(`/s/${roomCode}`);
     });
     socket.on('session:joined', (roomCode: string, words: Words) => {
       setRoomCode(roomCode);
       setPersona('guest');
       setWords(words);
+      history.push(`/s/${roomCode}`);
     });
     socket.on('session:words:updated', (words: Words) => {
       setWords(words);
@@ -47,34 +56,29 @@ function App() {
     });
   }, []);
 
-  const createRoom = useCallback(() => {
-    socket?.emit('session:host');
-  }, [socket]);
-
-  const joinRoom = useCallback(() => {
-    socket?.emit('session:join', roomCodeInput);
-  }, [socket, roomCodeInput]);
-
   return (
-    <div className="App">
-      <h1>Flowzone</h1>
-      <h2>{persona}</h2>
-      {roomCode
-        ? <code>code: {roomCode}</code>
-        : <>
-          <button onClick={createRoom}>Create room</button>
-          <div>
-            <input type="text" onChange={e => setRoomCodeInput(e.target.value)} value={roomCodeInput} />
-            <button onClick={joinRoom}>Join room</button>
-          </div>
-        </>
-      }
-      <SocketContext.Provider value={{ socket, roomCode }}>
-        {persona && (
-          persona === 'host' ? <Host words={words} /> : <Guest words={words} />
-        )}
-      </SocketContext.Provider>
-    </div>
+    <SocketContext.Provider value={{ socket, roomCode }}>
+      <div className="container">
+        <h1 className="title">Flowzone</h1>
+        {persona && <h2>{persona}</h2>}
+        {roomCode && <code>code: {roomCode}</code>}
+        <Switch>
+          <Route path="/join">
+            <EnterRoomCode />
+          </Route>
+          <Route path="/s/:roomCode">
+            {persona && (
+              persona === 'host'
+                ? <Host words={words} />
+                : <Guest words={words} />
+            )}
+          </Route>
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
+      </div>
+    </SocketContext.Provider>
   );
 }
 
